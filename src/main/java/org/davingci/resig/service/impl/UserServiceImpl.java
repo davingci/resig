@@ -26,6 +26,7 @@ public class UserServiceImpl implements UserService {
     public void save(User user) {
         PasswordUtil.encryptPassword(user);
         userDao.save(user);
+        
     }
 
 

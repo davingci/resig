@@ -8,13 +8,16 @@ import org.davingci.resig.domain.Comment;
 import org.davingci.resig.domain.User;
 import org.davingci.resig.response.Response;
 import org.davingci.resig.service.BlogService;
+import org.davingci.resig.service.CommentService;
 import org.davingci.resig.vo.BlogCommentVO;
 import org.davingci.resig.vo.CommentUserVO;
 import org.davingci.resig.vo.CommentVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -22,6 +25,9 @@ public class BlogController {
 
     @Autowired
     BlogService blogService;
+    
+    @Autowired
+    CommentService commentService;
 
     @PostMapping("/blog/add")
     public Response addBlog(@RequestParam String title,
@@ -55,6 +61,32 @@ public class BlogController {
         return Response.builder().code(200).data(data).build();
 
     }
+    
+    @PostMapping("/blog/{id}/edit")
+    public Response getBlog(@PathVariable("id") Integer id, @RequestParam String title,
+            @RequestParam String html,
+            @RequestParam String text,
+            @RequestParam String abstractContent,
+            @RequestParam String thumbnailUrl) {
+    	Blog  blog = blogService.getById(id);
+    	blog.setTitle(title);
+    	blog.setHtml(html);
+    	blog.setText(text);
+    	blog.setAbstractContent(abstractContent);
+    	blog.setThumbnailUrl(thumbnailUrl);
+    	blogService.save(blog);
+      	return Response.builder().code(200).data(blog).message("edit success").build();
+    }
+    
+    @PostMapping("/blog/{id}/delete")
+    public Response delBlog(@PathVariable("id") Integer id) {
+    	if (blogService.getById(id) == null) {
+    		return Response.builder().code(202).build();
+    	}
 
+    	blogService.deleteById(id);
+    	return Response.builder().code(200).message("delete success").build();
+    }
 
+    
 }

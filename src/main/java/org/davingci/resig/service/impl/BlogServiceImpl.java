@@ -3,6 +3,7 @@ package org.davingci.resig.service.impl;
 
 import org.davingci.resig.dao.BlogDao;
 import org.davingci.resig.domain.Blog;
+import org.davingci.resig.domain.User;
 import org.davingci.resig.service.BlogService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,6 +30,16 @@ public class BlogServiceImpl implements BlogService {
     @Override
     public Blog getById(Integer id) {
         return blogDao.getById(id);
+    }
+    
+    @Override
+    public void deleteById(Integer id) {
+    	blogDao.deleteById(id);
+    }
+    
+    @Override
+    public List<Blog> getByUser(User user){
+    	return blogDao.findByUser(user);
     }
 
 }

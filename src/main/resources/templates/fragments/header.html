@@ -34,7 +34,7 @@
             </form>
 
 			<div class="dropdown"  shiro:authenticated="true">
-			<button class="btn btn-outline-primary my-2 my-sm-0 dropdown-toggle" type="button" data-toggle="dropdown" id="username" th:text="${session.username}">username
+			<button class="btn btn-outline-primary my-2 my-sm-0 dropdown-toggle" data-disabled="true" data-toggle="dropdown" type="button" id="username" th:text="${session.username}">username
             <span class="caret"></span></button>
             <ul class="dropdown-menu">
                 <li><a th:href="@{#}">设置</a></li>

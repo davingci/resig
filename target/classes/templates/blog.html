@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"  xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{layout}">
+
+<div layout:fragment="content">
+
+    <link rel="stylesheet" th:href="@{/vendor/jquery-comments/css/jquery-comments.css}">
+    <link rel="stylesheet" th:href="@{/vendor/font-awesome/css/font-awesome.css}">
+    <script th:src="@{/vendor/jquery-comments/js/jquery-comments.js}"></script>
+
+    <script th:src="@{/vendor/jquery-textcomplete/jquery.textcomplete.js}"></script>
+    <script th:src="@{/vendor/moment/moment.js}"></script>
+    <script th:src="@{/vendor/moment/zh-cn.js}"></script>
+
+    <div class="news">
+        <div class="col-10 offset-1 col-md-6 offset-md-3">
+
+            <div th:text="${blog.title}" class="news-title"></div>
+            <div  class="news-author">
+                <span th:text="${blog.createdBy}">作者</span>
+                <span th:text="${#strings.substring(blog.createdDate,0,10)}">04.19 12:21</span>
+                <button class="btn btn-default btn-outline-dark btn-sm">原创</button>
+            </div>
+
+            <p th:utext="${blog.html}">内容</p>
+
+            <div class="comments-container" id="comments-container">
+
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        $(function() {
+            $("img").removeAttr("style");
+
+            $(".textarea").on("click",function(){
+                if(username===undefined || username == "") {
+                    alert("请登录");
+                }
+            });
+
+            $(function () {
+
+
+                var saveComment = function (data) {
+
+                    // Convert pings to human readable format
+                    $(data.pings).each(function (index, id) {
+                        var user = usersArray.filter(function (user) {
+                            return user.id == id
+                        })[0];
+                        data.content = data.content.replace('@' + id, '@' + user.fullname);
+                    });
+
+                    return data;
+                }
+
+                var username = $("#username").text();
+
+                var usersArray = [];
+                var commentsArray = [];
+                
+
+                $.ajax({
+                    url: window.location.href + "/comments",
+                    method: "get",
+                    success : function (response) {
+                        if(response.code = 200) {
+                            usersArray = response.data.users;
+                            commentsArray = response.data.comments;
+                            console.log(usersArray);
+                            console.log(commentsArray);
+                            $('#comments-container').comments({
+                                profilePictureURL: 'http://localhost:1111/resig-image/avatar.jpg',
+                                currentUserId: 1,
+                                roundProfilePictures: true,
+                                textareaRows: 1,
+                                textareaPlaceholderText: "写下你的评论......",
+                                newestText: "按时间倒序",
+                                oldestText: "按时间正序",
+                                popularText: "按喜欢排序",
+                                sendText: "发送",
+                                replyText: "回复",
+                                saveText: "发表",
+                                editText: "编辑",
+                                editedText: "已编辑",
+                                deleteText: "删除",
+                                youText: "我自己",
+                                viewAllRepliesText: " 查看所有 __replyCount__ 条回复 ",
+                                hideRepliesText: "隐藏",
+                                roundProfilePictures: true,
+                                defaultNavigationSortKey: "popularity",
+                                noCommentsText: "没有评论",
+                                textareaRows: "4",
+                                textareaRowsOnFocus: "4",
+                                deleteButtonColor: '#dc3545',
+                                enableEditing:false,
+
+
+                                getUsers: function (success, error) {
+
+                                    success(usersArray);
+
+                                },
+                                getComments: function (success, error) {
+                                    success(commentsArray);
+
+                                },
+                                postComment: function (data, success, error) {
+                                    //console.log(data);
+                                    if(username === undefined || username == "") {
+                                        var currentUrl = window.location.href;
+                                        window.location.href = baseurl + "/login?url=" + currentUrl;
+                                    }
+                                    else {
+                                        var url = window.location.href;
+                                        var index = url.lastIndexOf("/");
+                                        var blogId = url.substring(index+1,url.length);
+                                        console.log(blogId);
+                                        var formData = new FormData();
+                                        formData.append("username",username);
+                                        formData.append("content",data.content);
+                                        formData.append("blogId",blogId);
+                                        var parentId = data.parent;
+                                        if(parentId == null) {
+                                            parentId = "null";
+                                        }
+                                        formData.append("parentId",parentId);
+                                        $.ajax({
+                                            url:baseurl + "/comment/add",
+                                            data:formData,
+                                            type:"post",
+                                            processData: false,
+                                            contentType: false,
+                                            success: function (response) {
+                                                console.log(response);
+                                                var comment = response.data;
+
+                                                success(comment);
+
+                                            },
+                                            error:error
+
+                                        })
+
+                                    }
+
+
+                                },
+                                putComment: function (data, success, error) {
+                                    setTimeout(function () {
+                                        success(saveComment(data));
+                                    }, 500);
+                                },
+                                deleteComment: function (data, success, error) {
+                                    setTimeout(function () {
+                                        success();
+                                    }, 500);
+                                },
+                                upvoteComment: function (data, success, error) {
+
+                                    if(username === undefined || username == "") {
+                                        var currentUrl = window.location.href;
+                                        window.location.href = baseurl + "/login?url=" + currentUrl;
+                                    }
+                                    else {
+                                        var formData = new FormData();
+                                        formData.append("username",username);
+                                        formData.append("commentId",data.id);
+                                        formData.append("upvote",data.user_has_upvoted);
+
+                                        $.ajax({
+                                            url:baseurl+"/comment/upvote",
+                                            type:"post",
+                                            data: formData,
+                                            processData: false,
+                                            contentType: false,
+                                            success: function() {
+                                                success(data);
+                                            }
+
+                                        });
+                                    }
+
+                                },
+                                timeFormatter: function(time) {
+                                    moment.locale('zh-cn');
+                                    var createTime = moment(time);
+                                    var now = moment();
+                                    if(createTime.diff(now,'days') <= 1) {
+                                        return createTime.fromNow();
+                                    }
+                                    return moment(time).format('YYYY-MM-DD HH:mm:ss');
+                                    //return moment(time).fromNow();
+                                }
+                            });
+
+
+
+
+
+
+
+                        }
+                    }
+
+                });
+
+
+
+
+
+
+
+
+            })
+        });
+
+    </script>
+
+</div>

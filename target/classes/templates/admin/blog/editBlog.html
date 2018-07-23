@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<!--
+  ~ Copyright (c) Glory Software 2018.
+  -->
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" layout:decorate="~{admin/layout}">
+
+<div class="main-content" layout:fragment="content">
+    <script th:src="@{/vendor/ckeditor/ckeditor.js}"></script>
+    <script th:src="@{/vendor/bootbox/bootbox.js}"></script>
+    <script th:src="@{/vendor/cropper/canvas-to-blob.js}"></script>
+    <script th:src="@{/vendor/cropper/cropper.js}"></script>
+    <link rel="stylesheet" th:href="@{/vendor/cropper/cropper.css}">
+
+    <div class="main-content-inner">
+
+
+        <div class="breadcrumbs ace-save-state" id="breadcrumbs">
+            <ul class="breadcrumb">
+                <li>
+                    <a th:href="@{/admin/blog/listBlog}">文章管理</a>
+                </li>
+                <li>
+                    <a th:href="@{/admin/blog/addBlog}">发表文章</a>
+                </li>
+            </ul><!-- /.breadcrumb -->
+
+
+        </div>
+
+        <div class="page-content">
+            <div class="ace-settings-container" id="ace-settings-container">
+
+
+            </div><!-- /.ace-settings-container -->
+
+
+            <div class="row blog-form-wrap">
+
+                <div class="col-xs-12">
+
+                    <form id="form" class="form-horizontal">
+
+                        <div class="form-group">
+                            <div class="col-xs-12">
+                                <input type="text" class="form-control" name="title" id="title" placeholder="标题">
+                            </div>
+                        </div>
+
+
+
+
+
+                        <div class="form-group">
+                            <div class="col-xs-12">
+
+                                <textarea class="form-control" name="html" id="html" rows="30" cols="80" placeholder="开始写作......">
+
+                                </textarea>
+
+                            </div>
+                        </div>
+
+
+
+
+
+
+
+
+                        <!--封面 图像-->
+                        <div class="form-group">
+                            <label class="col-xs-6">
+                                封面图像(固定16:9比例截取)
+                            </label>
+
+
+                            <div class="col-xs-12">
+                                <label for="fileUp" class="form-control btn btn-success">选择封面图片</label>
+                                <input type="file" id="fileUp" name="fileUp" onchange="beginCut()" style="display: none" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-xs-12 cut-container" id="originImg">
+
+                            </div>
+                            <div class="col-xs-12" id="thumbnailPreview">
+
+                            </div>
+                            <input type="hidden" id="thumbnailUrl">
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-xs-4">
+                                <button type="button" class="form-control cut-submit btn btn-primary" >确定截取</button>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label class="col-xs-12">
+                                摘要
+                            </label>
+                            <div class="col-xs-12">
+                                <textarea class="form-control limited"  id="abstractContent" maxLength="120" rows="4" placeholder="选填，如果不填写会默认抓取正文前54个字"></textarea>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <div class="col-xs-12">
+                                <button type="button" class="form-control btn btn-primary" id="btnEditBlog">确定</button>
+                            </div>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="success-message" id="success-message">
+
+    </div>
+
+
+    <script th:inline="javascript">
+
+
+
+
+        var picScale={width:340,height:226,bWidth:340,bHeight:226};
+        var cutView=$(".cropper-cut-view");
+        var $fileUp=$("#fileUp");
+        //兼容性判定
+        var support={
+            fileList: !!$('<input type="file">').prop('files'),
+            blobURLs: !!window.URL && URL.createObjectURL,
+            formData: !!window.FormData
+        };
+        support.datauri = support.fileList && support.blobURLs;
+
+        var files,file;
+        function beginCut()
+        {
+            //不兼容的情况未做处理，可自行参考官方php example中的解决方法
+            if(support.datauri)
+            {
+                files=$fileUp.prop("files");
+                if(files.length>0){
+                    file=files[0];
+                }
+                if(isImageFile(file)){
+                    picUrl=URL.createObjectURL(file);
+                    this.startCropper();
+                }
+            }
+        }
+
+        function isImageFile(file) {
+            if (file.type) {
+                return /^image\/\w+$/.test(file.type);
+            } else {
+                return /\.(jpg|jpeg|png|gif)$/.test(file);
+            }
+        }
+
+        var active=false;
+        function startCropper()
+        {
+            var _this=this;
+            if(active){
+                $img.cropper('replace',picUrl);
+            }else{
+
+                $img=$('<img src="' + picUrl + '">');
+                $(".cut-container").empty().html($img);
+                console.log($img.width());
+                console.log($img.height());
+                $img.cropper({
+                    aspectRatio:16/9,
+                    autoCrop:false,
+                    //minCropBoxWidth:216,
+                    //minCropBoxHeight:144,
+                    zoomable:false,
+                    scalable:false,
+                    rotatable:false,
+                    //autoCropArea:0.01,
+                    ready:function(){
+                        var result = $img.cropper("getImageData");
+                        $img.cropper('crop');
+                        $img.cropper('setData',{
+                            width:picScale.bWidth,
+                            height:picScale.bHeight
+                        });
+                        //$img.cropper({minCropBoxWidth:mw,minCropBoxHeight:mh,});
+                        //$img.cropper("reset");
+                    }
+                });
+                $img.on('cropmove',function(e){
+                    var data=$img.cropper('getData');
+                    if(data.width<picScale.width||data.height<picScale.height){
+                        e.preventDefault();
+                    }
+                });
+                $img.on('cropend',function(e){
+                    var data=$img.cropper('getData');
+                    if(data.width<picScale.width||data.height<picScale.height){
+                        $img.cropper('setData',{ width:picScale.width,
+                            height:picScale.height});
+                    }
+                });
+
+                active=true;
+            }
+        }
+
+        function stopCropper()
+        {
+            if(active){
+                $img.cropper("destroy");
+                $img.remove();
+                $fileUp.val("");
+                active = false;
+            }
+        }
+
+        $(".cut-submit").on('click',function(){
+            //
+            if(typeof($img) == "undefined" || !$img){
+                alert("请上传图片!");
+                return;
+            }
+            $img.cropper("getCroppedCanvas").toBlob(function(blob){
+                var formData=new FormData();
+                formData.append('file',blob,file.name);
+
+                $.ajax({
+                    method:"post",
+                    url: baseurl + "/upload", //用于文件上传的服务器端请求地址
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success:function(result){
+                        console.log(result);
+
+                        var obj=result.data;
+
+                        var img=$('<img src="' + obj.url + '">');
+                        $("#thumbnailPreview").html(img);
+                        //currentUploadDom.parent().next().next().show();
+                        //currentUploadDom.attr("src",result.src);
+                        //close
+
+                        $("#thumbnailUrl").attr("value",obj.url);
+                        cutView.hide();
+                        stopCropper();
+
+
+                    }
+                });
+            });
+        });
+
+
+
+
+        $(function() {
+
+
+            $('textarea.limited').inputlimiter({
+                remText: '剩余%n字 ',
+                limitText: ' 最多%n字'
+            });
+
+			var blogId =[[${blog.id}]];
+			var blogTitle = [[${blog.title}]];
+			var blogHtml = [[${blog.html}]];
+			var blogText = [[${blog.text}]];
+			var blogthumbnailUrl = [[${blog.thumbnailUrl}]];
+			var blogabstractContent = [[${blog.abstractContent}]];
+            console.log(blogId);
+            $("#title").val(blogTitle);
+            $("#html").html(blogHtml);
+            $("#abstractContent").html(blogabstractContent);
+            var editor = CKEDITOR.replace( 'html',{ height: '800px', width: '620px' } );
+                        
+            var url = baseurl + "/blog/" + blogId + "/edit";
+            console.log(url);
+              
+            $("#btnEditBlog").on('click',function() {
+            	var formData=new FormData();
+                var title = $("#title").val();
+                formData.append("title",title);
+
+                var text = CKEDITOR.instances.html.document.getBody().getText();
+                formData.append("text",text);
+
+
+                var html = CKEDITOR.instances.html.getData();
+                formData.append("html",html);
+
+                var thumbnailUrl = $("#thumbnailUrl").val();
+                formData.append("thumbnailUrl",thumbnailUrl);
+
+                var abstractContent = $("#abstractContent").val();
+                formData.append("abstractContent",abstractContent);
+                            
+                
+                $.ajax({
+                    url: url,
+                    method: 'post',
+                    processData:false,
+                    contentType: false,
+                    data: formData,
+                    success: function (response) {
+                        if(response.code == 200) {
+                            $("#success-message").html(response.message);
+                            $("#success-message").delay(200).fadeIn().delay(1000).fadeOut();
+                        }
+
+                    },
+                    failure: function(response) {
+                        //服务器出问题，网络出问题
+                        console.log("失败。")
+                    }
+                });
+
+            });
+			        
+        });
+
+
+    </script>
+
+</div>
+

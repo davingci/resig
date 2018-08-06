@@ -58,6 +58,7 @@
                 <th>标题</th>
                 <th>内容</th>
                 <th>时间</th>
+                <th>状态</th>
                 <th>操作</th>
             </tr>
         </thead>
@@ -76,6 +77,8 @@
 		                <td th:text="${blog.text}">text</td>
 		                
 		                <td th:text="${blog.lastModifiedDate}">date</td>
+		                
+		                <td th:text="${blog.blogState}">state</td>
 
 		               
 		                <td > <a class="btn btn-primary small" th:onclick="|edit('${blog.id}')|">编辑</a>&nbsp &nbsp<a class="btn btn-danger small" th:onclick="|del('${blog.id}')|">删除</a>	</td>
@@ -130,9 +133,9 @@ $(document).ready(function() {
 	}	
     function del(id)
     {
-    	url = baseurl + '/blog/' + id + '/delete';
-    	//var formData=new FormData();
-		
+    	//to user's trash box
+    	url = baseurl + '/blog/' + id + '/trash';
+    			
         $.ajax({
             url: url,
             method: 'post',

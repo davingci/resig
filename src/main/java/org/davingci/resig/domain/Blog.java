@@ -24,6 +24,10 @@ public class Blog extends AbstractAuditable<String> implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(length=10)
+    private  BlogStateEnum blogState;
 
     private String title;
 
@@ -48,6 +52,7 @@ public class Blog extends AbstractAuditable<String> implements Serializable {
             fetch = FetchType.LAZY
     )
     private Set<Comment> comments = new HashSet<>();
+    
 
 
 }

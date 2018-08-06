@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -17,14 +18,18 @@ public class BlogServiceImpl implements BlogService {
 
     @Autowired
     BlogDao blogDao;
-
+    
     public void save(Blog blog) {
-        blogDao.save(blog);
+    	blogDao.save(blog);
+    }
+
+    public Blog saveAndFlush(Blog blog) {
+        return blogDao.saveAndFlush(blog);
     }
 
     @Override
     public List<Blog> list() {
-        return blogDao.findAll();
+        return blogDao.findAll().stream().filter(blog -> "APPROVED".equals(blog.getBlogState())).collect(Collectors.toList());
     }
 
     @Override

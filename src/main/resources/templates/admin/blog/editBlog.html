@@ -39,7 +39,7 @@
                 <div class="col-xs-12">
 
                     <form id="form" class="form-horizontal">
-
+						<input type="hidden" name="id" id="id">
                         <div class="form-group">
                             <div class="col-xs-12">
                                 <input type="text" class="form-control" name="title" id="title" placeholder="标题">
@@ -108,8 +108,9 @@
 
 
                         <div class="form-group">
-                            <div class="col-xs-12">
-                                <button type="button" class="form-control btn btn-primary" id="btnEditBlog">确定</button>
+                            <div class="col-xs-12">                                
+                                <button type="button" class="form-control btn btn-primary" id="btnSaveBlog">保存</button>
+                                <button type="button" class="form-control btn btn-primary" id="btnPublishBlog">发表</button>
                             </div>
                         </div>
 
@@ -283,6 +284,7 @@
 			var blogthumbnailUrl = [[${blog.thumbnailUrl}]];
 			var blogabstractContent = [[${blog.abstractContent}]];
             console.log(blogId);
+            $("#id").val(blogId);
             $("#title").val(blogTitle);
             $("#html").html(blogHtml);
             $("#abstractContent").html(blogabstractContent);
@@ -291,8 +293,12 @@
             var url = baseurl + "/blog/" + blogId + "/edit";
             console.log(url);
               
-            $("#btnEditBlog").on('click',function() {
+            $("#btnSaveBlog").on('click',function() {
             	var formData=new FormData();
+            	
+            	var id = $("#id").val();
+            	formData.append("id",id);
+            	
                 var title = $("#title").val();
                 formData.append("title",title);
 
@@ -330,9 +336,57 @@
                 });
 
             });
+            
+            $("#btnPublishBlog").on('click',function() {
+
+                var formData=new FormData();
+                
+                var id = $("#id").val();
+                formData.append("id", id);
+
+                var title = $("#title").val();
+                formData.append("title",title);
+
+                var text = CKEDITOR.instances.html.document.getBody().getText();
+                formData.append("text",text);
+
+
+                var html = CKEDITOR.instances.html.getData();
+                formData.append("html",html);
+
+                var thumbnailUrl = $("#thumbnailUrl").val();
+                formData.append("thumbnailUrl",thumbnailUrl);
+
+                var abstractContent = $("#abstractContent").val();
+                formData.append("abstractContent",abstractContent);
+
+
+                var url = baseurl + "/blog/publish";
+                $.ajax({
+                    url: url,
+                    method: 'post',
+                    processData:false,
+                    contentType: false,
+                    data: formData,
+                    success: function (response) {
+                        if(response.code == 200) {
+                        	//点击保存后，获得id，并保存在隐藏input
+                        	$("#id").val(response.data);
+                            $("#success-message").html(response.message);
+                            $("#success-message").delay(200).fadeIn().delay(1000).fadeOut();
+                        }
+
+                    },
+                    failure: function(response) {
+                        //服务器出问题，网络出问题
+                        console.log("失败。")
+                    }
+                });
+
+            
 			        
         });
-
+        });
 
     </script>
 

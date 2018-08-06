@@ -1,9 +1,12 @@
 
 package org.davingci.resig.web;
 
+
+
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.subject.Subject;
 import org.davingci.resig.domain.Blog;
+import org.davingci.resig.domain.BlogStateEnum;
 import org.davingci.resig.domain.Comment;
 import org.davingci.resig.domain.User;
 import org.davingci.resig.response.Response;
@@ -29,19 +32,63 @@ public class BlogController {
     @Autowired
     CommentService commentService;
 
-    @PostMapping("/blog/add")
-    public Response addBlog(@RequestParam String title,
+    @PostMapping("/blog/add")//save draft
+    public Response addBlog(@RequestParam String id,
+    						@RequestParam String title,
                             @RequestParam String html,
                             @RequestParam String text,
                             @RequestParam String abstractContent,
                             @RequestParam String thumbnailUrl) {
-        Blog blog = Blog.builder().title(title).html(html).text(text)
-                .abstractContent(abstractContent).thumbnailUrl(thumbnailUrl).build();
-        Subject subject = SecurityUtils.getSubject();
-        User user = (User) subject.getPrincipals().getPrimaryPrincipal();
-        blog.setUser(user);
-        blogService.save(blog);
-        return Response.builder().code(200).message("添加成功").build();
+        if (id.isEmpty()) {
+        	Blog blog = Blog.builder().title(title).html(html).text(text)
+        				.abstractContent(abstractContent).thumbnailUrl(thumbnailUrl).build();
+        	Subject subject = SecurityUtils.getSubject();
+        	User user = (User) subject.getPrincipals().getPrimaryPrincipal();
+        	blog.setUser(user);
+        	blog.setBlogState(BlogStateEnum.SAVED);
+        	Blog b = blogService.saveAndFlush(blog);          	
+        	return Response.builder().data(b.getId()).code(200).message("保存成功").build();
+        }else {
+        	Blog  blog = blogService.getById(Integer.valueOf(id));
+        	blog.setTitle(title);
+        	blog.setHtml(html);
+        	blog.setText(text);
+        	blog.setAbstractContent(abstractContent);
+        	blog.setThumbnailUrl(thumbnailUrl);
+        	blog.setBlogState(BlogStateEnum.SAVED);
+        	blogService.save(blog);
+        	return Response.builder().code(200).data(blog).message("保存成功").build();
+        }
+        
+    }
+    
+    @PostMapping("/blog/publish")
+    public Response publishBlog(@RequestParam String id,
+    						@RequestParam String title,
+                            @RequestParam String html,
+                            @RequestParam String text,
+                            @RequestParam String abstractContent,
+                            @RequestParam String thumbnailUrl) {
+    	if (id.isEmpty()) {
+    		Blog blog = Blog.builder().title(title).html(html).text(text)
+    					.abstractContent(abstractContent).thumbnailUrl(thumbnailUrl).build();
+    		blog.setBlogState(BlogStateEnum.APPROVED);
+    		Subject subject = SecurityUtils.getSubject();
+    		User user = (User) subject.getPrincipals().getPrimaryPrincipal();
+    		blog.setUser(user);
+    		blogService.save(blog);
+    		return Response.builder().code(200).message("发表成功").build();
+    	}else {
+        	Blog  blog = blogService.getById(Integer.valueOf(id));
+        	blog.setTitle(title);
+        	blog.setHtml(html);
+        	blog.setText(text);
+        	blog.setAbstractContent(abstractContent);
+        	blog.setThumbnailUrl(thumbnailUrl);
+        	blog.setBlogState(BlogStateEnum.APPROVED);
+        	blogService.save(blog);
+        	return Response.builder().code(200).message("发表成功").build();
+    	}
     }
 
     @GetMapping("/blog/{id}/comments")
@@ -78,6 +125,15 @@ public class BlogController {
       	return Response.builder().code(200).data(blog).message("edit success").build();
     }
     
+    @PostMapping("/blog/{id}/trash")
+    public Response trashBlog(@PathVariable("id") Integer id) {
+    	Blog  blog = blogService.getById(id);
+    	blog.setBlogState(BlogStateEnum.DELETED);
+    	blogService.save(blog);
+      	return Response.builder().code(200).data(blog).message("to trash").build();
+    }
+    
+    
     @PostMapping("/blog/{id}/delete")
     public Response delBlog(@PathVariable("id") Integer id) {
     	if (blogService.getById(id) == null) {
@@ -87,6 +143,8 @@ public class BlogController {
     	blogService.deleteById(id);
     	return Response.builder().code(200).message("delete success").build();
     }
+    
+    
 
     
 }

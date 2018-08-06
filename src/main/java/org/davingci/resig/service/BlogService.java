@@ -7,8 +7,10 @@ import org.davingci.resig.domain.User;
 import java.util.List;
 
 public interface BlogService {
+	
+	public void save(Blog blog);
 
-    public void save(Blog blog);
+    public Blog saveAndFlush(Blog blog);
         
     public List<Blog> list();
 

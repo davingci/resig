@@ -52,9 +52,20 @@ public class RouteController {
         User user = (User) subject.getPrincipals().getPrimaryPrincipal();
         List<Blog> userBlogList = blogService.getByUser(user);
 
-        map.addAttribute("userBlogList", userBlogList);
+        map.addAttribute("userBlogList", userBlogList.stream().filter(b -> !"DELETED".equals(String.valueOf(b.getBlogState()))).collect(Collectors.toList()));
     	return "admin/blog/listBlog";
     }
+    
+    @GetMapping("/admin/blog/listTrashBlog")
+    public String adminListTrashBlog(ModelMap map) {
+        Subject subject = SecurityUtils.getSubject();
+        User user = (User) subject.getPrincipals().getPrimaryPrincipal();
+        List<Blog> userBlogList = blogService.getByUser(user);
+        userBlogList.forEach(b -> System.out.println(String.valueOf(b.getBlogState())));
+        map.addAttribute("userTrashBlogList", userBlogList.stream().filter(b -> "DELETED".equals(String.valueOf(b.getBlogState()))).collect(Collectors.toList()));
+    	return "admin/blog/listTrashBlog";
+    }
+    
     
     @GetMapping("/blog/{id}/edit")
     public String editBlog(@PathVariable("id") String id, ModelMap map) {

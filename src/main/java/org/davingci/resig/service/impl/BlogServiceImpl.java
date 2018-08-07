@@ -29,7 +29,7 @@ public class BlogServiceImpl implements BlogService {
 
     @Override
     public List<Blog> list() {
-        return blogDao.findAll().stream().filter(blog -> "APPROVED".equals(blog.getBlogState())).collect(Collectors.toList());
+        return blogDao.findAll().stream().filter(blog -> "APPROVED".equals(String.valueOf(blog.getBlogState()))).collect(Collectors.toList());
     }
 
     @Override

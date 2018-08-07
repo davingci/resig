@@ -133,6 +133,14 @@ public class BlogController {
       	return Response.builder().code(200).data(blog).message("to trash").build();
     }
     
+    @PostMapping("/blog/{id}/restore")
+    public Response restoreBlog(@PathVariable("id") Integer id) {
+    	Blog  blog = blogService.getById(id);
+    	blog.setBlogState(BlogStateEnum.SAVED);
+    	blogService.save(blog);
+      	return Response.builder().code(200).data(blog).message("blog restored").build();
+    }
+    
     
     @PostMapping("/blog/{id}/delete")
     public Response delBlog(@PathVariable("id") Integer id) {

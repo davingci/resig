@@ -282,7 +282,8 @@
 
                 var formData=new FormData();
                 
-                var id = $("#id").val();
+                var id = $("#id").val(); 
+                id = (id == ''? 'new' : id);
                 formData.append("id", id);
 
                 var title = $("#title").val();
@@ -333,6 +334,7 @@
                 var formData=new FormData();
                 
                 var id = $("#id").val();
+                id = (id == ''? 'new' : id);
                 formData.append("id", id);
 
                 var title = $("#title").val();
@@ -360,7 +362,7 @@
                     contentType: false,
                     data: formData,
                     success: function (response) {
-                        if(response.code == 200) {
+                        if(response.code == 200) {                        	
                             $("#success-message").html(response.message);
                             $("#success-message").delay(200).fadeIn().delay(1000).fadeOut();
                         }

@@ -57,7 +57,7 @@
                 <th>作者</th>
                 <th>标题</th>
                 <th>内容</th>
-                <th>时间</th>
+                <th>上次修改时间</th>
                 <th>状态</th>
                 <th>操作</th>
             </tr>
@@ -79,9 +79,15 @@
 		                <td th:text="${blog.lastModifiedDate}">date</td>
 		                
 		                <td th:text="${blog.blogState}">state</td>
-
 		               
-		                <td > <a class="btn btn-primary small" th:onclick="|edit('${blog.id}')|">编辑</a>&nbsp &nbsp<a class="btn btn-danger small" th:onclick="|trash('${blog.id}')|">删除</a>	</td>
+		                <td> 
+		                	
+		                	<span th:if="${#strings.toString(blog.blogState)} == 'SAVED'"><a class="btn btn-primary small" th:onclick="|edit('${blog.id}')|">编辑</a>
+		                	&nbsp &nbsp<a class="btn btn-success small" th:onclick="|publish('${blog.id}')|">发表</a>
+		                	&nbsp &nbsp<a class="btn btn-danger small" th:onclick="|trash('${blog.id}')|">放弃</a></span>
+		                	<span th:if="${#strings.toString(blog.blogState)} == 'APPROVED'"><a class="btn btn-warning small" th:onclick="|withdraw('${blog.id}')|">撤回</a></span>		                   
+		                
+		                </td>
 				</tr>
 
             
@@ -103,6 +109,7 @@
 	
 
 $(document).ready(function() {
+	
 	jQuery(function($) {
 		var oTable1 = $('#blogTable').dataTable({
 
@@ -127,10 +134,67 @@ $(document).ready(function() {
 });
 });
 	var id;	
+	var url;
 	function edit(id)
 	{
 		window.location.href = baseurl + '/blog/' + id + '/edit';
-	}	
+	}
+	
+	function publish(id)
+	{
+		url = baseurl + '/blog/' + id + '/publishfromlist';
+		
+        $.ajax({
+            url: url,
+            method: 'post',
+            processData:false,
+            contentType: false,
+            success: function (response) {
+            	console.log(response);
+                if(response.code == 200) {
+                    
+                	$("#success-message").html(response.message);
+                    $("#success-message").delay(200).fadeIn().delay(1000).fadeOut();
+                    
+                	window.location.reload();
+                }
+               
+
+            },
+            failure: function(response) {
+                //服务器出问题，网络出问题
+                console.log("失败。")
+            }
+        });
+	}
+	
+	function withdraw(id)
+	{
+		url = baseurl + '/blog/' + id + '/withdraw';
+		
+        $.ajax({
+            url: url,
+            method: 'post',
+            processData:false,
+            contentType: false,
+            success: function (response) {
+            	console.log(response);
+                if(response.code == 200) {
+                    
+                	$("#success-message").html(response.message);
+                    $("#success-message").delay(200).fadeIn().delay(1000).fadeOut();
+                    
+                	window.location.reload();
+                }
+               
+
+            },
+            failure: function(response) {
+                //服务器出问题，网络出问题
+                console.log("失败。")
+            }
+        });
+	}
     function trash(id)
     {
     	//to user's trash box

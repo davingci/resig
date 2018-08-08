@@ -283,7 +283,7 @@
 			var blogText = [[${blog.text}]];
 			var blogthumbnailUrl = [[${blog.thumbnailUrl}]];
 			var blogabstractContent = [[${blog.abstractContent}]];
-            console.log(blogId);
+            //console.log(blogId);
             $("#id").val(blogId);
             $("#title").val(blogTitle);
             $("#html").html(blogHtml);
@@ -291,14 +291,15 @@
             var editor = CKEDITOR.replace( 'html',{ height: '800px', width: '620px' } );
                         
             var url = baseurl + "/blog/" + blogId + "/edit";
-            console.log(url);
+            //console.log(url);
               
             $("#btnSaveBlog").on('click',function() {
+            	
             	var formData=new FormData();
-            	
-            	var id = $("#id").val();
-            	formData.append("id",id);
-            	
+                
+                var id = $("#id").val();                
+                formData.append("id", id);
+                
                 var title = $("#title").val();
                 formData.append("title",title);
 
@@ -314,8 +315,8 @@
 
                 var abstractContent = $("#abstractContent").val();
                 formData.append("abstractContent",abstractContent);
-                            
                 
+                var url = baseurl + "/blog/add";
                 $.ajax({
                     url: url,
                     method: 'post',
@@ -324,7 +325,8 @@
                     data: formData,
                     success: function (response) {
                         if(response.code == 200) {
-                            $("#success-message").html(response.message);
+                        	
+                        	$("#success-message").html(response.message);
                             $("#success-message").delay(200).fadeIn().delay(1000).fadeOut();
                         }
 
@@ -335,15 +337,16 @@
                     }
                 });
 
+
             });
             
             $("#btnPublishBlog").on('click',function() {
 
-                var formData=new FormData();
+            	var formData=new FormData();
                 
                 var id = $("#id").val();
                 formData.append("id", id);
-
+                
                 var title = $("#title").val();
                 formData.append("title",title);
 
@@ -359,21 +362,19 @@
 
                 var abstractContent = $("#abstractContent").val();
                 formData.append("abstractContent",abstractContent);
-
-
-                var url = baseurl + "/blog/publish";
+                url = baseurl + "/blog/publish";
+               
                 $.ajax({
                     url: url,
                     method: 'post',
                     processData:false,
-                    contentType: false,
+                    contentType: false, 
                     data: formData,
                     success: function (response) {
                         if(response.code == 200) {
-                        	//点击保存后，获得id，并保存在隐藏input
-                        	$("#id").val(response.data);
                             $("#success-message").html(response.message);
                             $("#success-message").delay(200).fadeIn().delay(1000).fadeOut();
+                            window.location.href=baseurl + "/admin/blog/listBlog";
                         }
 
                     },
@@ -388,6 +389,7 @@
         });
         });
 
+        
     </script>
 
 </div>

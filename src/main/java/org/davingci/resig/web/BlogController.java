@@ -39,7 +39,7 @@ public class BlogController {
                             @RequestParam String text,
                             @RequestParam String abstractContent,
                             @RequestParam String thumbnailUrl) {
-        if (id.isEmpty()) {
+        if ("new".equals(id)) {
         	Blog blog = Blog.builder().title(title).html(html).text(text)
         				.abstractContent(abstractContent).thumbnailUrl(thumbnailUrl).build();
         	Subject subject = SecurityUtils.getSubject();
@@ -57,29 +57,39 @@ public class BlogController {
         	blog.setThumbnailUrl(thumbnailUrl);
         	blog.setBlogState(BlogStateEnum.SAVED);
         	blogService.save(blog);
-        	return Response.builder().code(200).data(blog).message("保存成功").build();
+        	return Response.builder().code(200).data(blog.getId()).message("保存成功").build();
         }
         
     }
     
-    @PostMapping("/blog/publish")
-    public Response publishBlog(@RequestParam String id,
-    						@RequestParam String title,
-                            @RequestParam String html,
-                            @RequestParam String text,
-                            @RequestParam String abstractContent,
-                            @RequestParam String thumbnailUrl) {
-    	if (id.isEmpty()) {
-    		Blog blog = Blog.builder().title(title).html(html).text(text)
-    					.abstractContent(abstractContent).thumbnailUrl(thumbnailUrl).build();
+    @PostMapping("/blog/{id}/publishfromlist")
+    public Response publishBlog(@PathVariable String id) {
+    	
+    		Blog blog = blogService.getById(Integer.valueOf(id));
     		blog.setBlogState(BlogStateEnum.APPROVED);
-    		Subject subject = SecurityUtils.getSubject();
-    		User user = (User) subject.getPrincipals().getPrimaryPrincipal();
-    		blog.setUser(user);
     		blogService.save(blog);
-    		return Response.builder().code(200).message("发表成功").build();
+    		return Response.builder().code(200).message("发表成功").build();    		
+    	
+    }
+    
+    @PostMapping("/blog/publish")
+    public Response publisheditBlog(@RequestParam String id,
+									@RequestParam String title,
+									@RequestParam String html,
+									@RequestParam String text,
+									@RequestParam String abstractContent,
+									@RequestParam String thumbnailUrl) {
+    	if ("new".equals(id)) {
+        	Blog blog = Blog.builder().title(title).html(html).text(text)
+    				.abstractContent(abstractContent).thumbnailUrl(thumbnailUrl).build();
+        	Subject subject = SecurityUtils.getSubject();
+        	User user = (User) subject.getPrincipals().getPrimaryPrincipal();
+        	blog.setUser(user);
+        	blog.setBlogState(BlogStateEnum.APPROVED);
+        	blogService.save(blog);
+        	return Response.builder().code(200).message("发表成功").build();
     	}else {
-        	Blog  blog = blogService.getById(Integer.valueOf(id));
+    		Blog  blog = blogService.getById(Integer.valueOf(id));
         	blog.setTitle(title);
         	blog.setHtml(html);
         	blog.setText(text);
@@ -87,8 +97,17 @@ public class BlogController {
         	blog.setThumbnailUrl(thumbnailUrl);
         	blog.setBlogState(BlogStateEnum.APPROVED);
         	blogService.save(blog);
-        	return Response.builder().code(200).message("发表成功").build();
+        	return Response.builder().code(200).data(blog.getId()).message("发表成功").build();
     	}
+    }
+    
+    
+    @PostMapping("/blog/{id}/withdraw")
+    public Response withdrawBlog(@PathVariable("id") Integer id) {
+    	Blog  blog = blogService.getById(id);
+    	blog.setBlogState(BlogStateEnum.SAVED);
+    	blogService.save(blog);
+      	return Response.builder().code(200).data(blog).message("withdraw success").build();
     }
 
     @GetMapping("/blog/{id}/comments")

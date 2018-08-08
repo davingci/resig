@@ -365,6 +365,7 @@
                         if(response.code == 200) {                        	
                             $("#success-message").html(response.message);
                             $("#success-message").delay(200).fadeIn().delay(1000).fadeOut();
+                            window.location.href=baseurl + "/admin/blog/listBlog";
                         }
 
                     },

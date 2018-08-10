@@ -31,6 +31,7 @@ CKEDITOR.editorConfig = function( config ) {
     //config.entities = false;
     //拖动和粘贴处理
     config.extraPlugins = 'uploadimage';
+    config.extraPlugins = 'codeTag';
     config.imageUploadUrl = '/upload-ckeditor';
 
 

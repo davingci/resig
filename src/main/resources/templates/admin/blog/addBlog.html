@@ -19,8 +19,19 @@
                 <li>
                     <a th:href="@{/admin/blog/listBlog}">文章管理</a>
                 </li>
+                <li >
+                    <a style="color: #45ab3a" th:href="@{/admin/blog/addBlog}">发表文章</a>
+                </li>
                 <li>
-                    <a th:href="@{/admin/blog/addBlog}">发表文章</a>
+                    <a th:href="@{/admin/blog/publishedBlog}">已发表</a>
+                </li>
+                <li>
+                    <a th:href="@{/admin/blog/listTrashBlog}">回收站</a>
+                </li>
+                <li>
+                   <div class="success-message" id="success-message">
+
+                  </div>
                 </li>
             </ul><!-- /.breadcrumb -->
 
@@ -28,11 +39,12 @@
         </div>
 
         <div class="page-content">
-            <div class="ace-settings-container" id="ace-settings-container">
 
-
-            </div><!-- /.ace-settings-container -->
-
+          <div class="page-header">
+            <h1 style="color: #45ab3a">
+              发表文章
+            </h1>
+          </div><!-- /.page-header -->
 
             <div class="row blog-form-wrap">
 
@@ -42,7 +54,7 @@
 								<input type="hidden" name="id" id="id">
                         <div class="form-group">
                             <div class="col-xs-12">
-                            	
+
                                 <input type="text" class="form-control" name="title" id="title" placeholder="标题">
                             </div>
                         </div>
@@ -275,14 +287,14 @@
             });
 
 
-            var editor = CKEDITOR.replace( 'html',{ height: '800px', width: '620px' } );
+            var editor = CKEDITOR.replace( 'html',{ height: '800px', width: '650px'} );
 
 
             $("#btnAddBlog").on('click',function() {
 
                 var formData=new FormData();
-                
-                var id = $("#id").val(); 
+
+                var id = $("#id").val();
                 id = (id == ''? 'new' : id);
                 formData.append("id", id);
 
@@ -327,12 +339,12 @@
 
 
             });
-            
-            
+
+
             $("#btnPublishBlog").on('click',function() {
 
                 var formData=new FormData();
-                
+
                 var id = $("#id").val();
                 id = (id == ''? 'new' : id);
                 formData.append("id", id);
@@ -362,7 +374,7 @@
                     contentType: false,
                     data: formData,
                     success: function (response) {
-                        if(response.code == 200) {                        	
+                        if(response.code == 200) {
                             $("#success-message").html(response.message);
                             $("#success-message").delay(200).fadeIn().delay(1000).fadeOut();
                             window.location.href=baseurl + "/admin/blog/listBlog";
@@ -384,4 +396,3 @@
     </script>
 
 </div>
-

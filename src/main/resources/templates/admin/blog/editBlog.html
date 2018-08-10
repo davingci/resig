@@ -22,16 +22,28 @@
                 <li>
                     <a th:href="@{/admin/blog/addBlog}">发表文章</a>
                 </li>
+                <li>
+                    <a th:href="@{/admin/blog/publishedBlog}">已发表</a>
+                </li>
+                <li>
+                    <a th:href="@{/admin/blog/listTrashBlog}">回收站</a>
+                </li>
+                <li>
+                   <div class="success-message" id="success-message">
+
+                  </div>
+                </li>
             </ul><!-- /.breadcrumb -->
 
 
         </div>
 
         <div class="page-content">
-            <div class="ace-settings-container" id="ace-settings-container">
-
-
-            </div><!-- /.ace-settings-container -->
+          <div class="page-header">
+            <h1>
+              编辑文章
+            </h1>
+          </div><!-- /.page-header -->
 
 
             <div class="row blog-form-wrap">
@@ -108,7 +120,7 @@
 
 
                         <div class="form-group">
-                            <div class="col-xs-12">                                
+                            <div class="col-xs-12">
                                 <button type="button" class="form-control btn btn-primary" id="btnSaveBlog">保存</button>
                                 <button type="button" class="form-control btn btn-primary" id="btnPublishBlog">发表</button>
                             </div>
@@ -288,18 +300,18 @@
             $("#title").val(blogTitle);
             $("#html").html(blogHtml);
             $("#abstractContent").html(blogabstractContent);
-            var editor = CKEDITOR.replace( 'html',{ height: '800px', width: '620px' } );
-                        
+            var editor = CKEDITOR.replace( 'html',{ height: '800px', width: '650px' } );
+
             var url = baseurl + "/blog/" + blogId + "/edit";
             //console.log(url);
-              
+
             $("#btnSaveBlog").on('click',function() {
-            	
+
             	var formData=new FormData();
-                
-                var id = $("#id").val();                
+
+                var id = $("#id").val();
                 formData.append("id", id);
-                
+
                 var title = $("#title").val();
                 formData.append("title",title);
 
@@ -315,7 +327,7 @@
 
                 var abstractContent = $("#abstractContent").val();
                 formData.append("abstractContent",abstractContent);
-                
+
                 var url = baseurl + "/blog/add";
                 $.ajax({
                     url: url,
@@ -325,7 +337,7 @@
                     data: formData,
                     success: function (response) {
                         if(response.code == 200) {
-                        	
+
                         	$("#success-message").html(response.message);
                             $("#success-message").delay(200).fadeIn().delay(1000).fadeOut();
                         }
@@ -339,14 +351,14 @@
 
 
             });
-            
+
             $("#btnPublishBlog").on('click',function() {
 
             	var formData=new FormData();
-                
+
                 var id = $("#id").val();
                 formData.append("id", id);
-                
+
                 var title = $("#title").val();
                 formData.append("title",title);
 
@@ -363,12 +375,12 @@
                 var abstractContent = $("#abstractContent").val();
                 formData.append("abstractContent",abstractContent);
                 url = baseurl + "/blog/publish";
-               
+
                 $.ajax({
                     url: url,
                     method: 'post',
                     processData:false,
-                    contentType: false, 
+                    contentType: false,
                     data: formData,
                     success: function (response) {
                         if(response.code == 200) {
@@ -384,13 +396,12 @@
                     }
                 });
 
-            
-			        
+
+
         });
         });
 
-        
+
     </script>
 
 </div>
-

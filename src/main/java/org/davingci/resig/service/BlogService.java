@@ -4,6 +4,7 @@ package org.davingci.resig.service;
 import org.davingci.resig.domain.Blog;
 import org.davingci.resig.domain.User;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface BlogService {
@@ -19,4 +20,8 @@ public interface BlogService {
     public void deleteById(Integer id);
     
     public List<Blog> getByUser(User user);
+    
+    public List<Blog> getByUserSortByLastModifiedDateDesc(User user);
+    
+
 }

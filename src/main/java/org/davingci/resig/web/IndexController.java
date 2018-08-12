@@ -22,8 +22,7 @@ public class IndexController {
 
     @GetMapping("/")
     public String index(ModelMap map) {
-        List<Blog> blogs = blogService.list();
-        System.out.println(blogs.size());
+        List<Blog> blogs = blogService.list();        
         map.addAttribute("blogs",blogs);
 
         return "index";

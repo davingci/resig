@@ -116,6 +116,15 @@
             <b class="arrow"></b>
 
             <ul class="submenu">
+              <li class="">
+                  <a th:href="@{/admin/blog/listBlog}">
+                      <i class="menu-icon fa fa-caret-right"></i>
+                      素材库
+                  </a>
+
+                  <b class="arrow"></b>
+              </li>
+
                 <li class="">
                     <a th:href="@{/admin/blog/addBlog}">
                         <i class="menu-icon fa fa-caret-right"></i>
@@ -125,16 +134,18 @@
                     <b class="arrow"></b>
                 </li>
 
-
-
                 <li class="">
-                    <a th:href="@{/admin/blog/listBlog}">
+                    <a th:href="@{/admin/blog/publishedBlog}">
                         <i class="menu-icon fa fa-caret-right"></i>
-                        我的文章
+                        已发表
                     </a>
 
                     <b class="arrow"></b>
                 </li>
+
+
+
+
 
                 <li class="">
                     <a th:href="@{/admin/blog/listTrashBlog}">

@@ -52,17 +52,12 @@ public class RouteController {
     public String adminListBlog(ModelMap map) {
         Subject subject = SecurityUtils.getSubject();
         User user = (User) subject.getPrincipals().getPrimaryPrincipal();
-        List<Blog> userBlogList = blogService.getByUser(user);        
-    	
+        List<Blog> userBlogList = blogService.getByUserSortByLastModifiedDateDesc(user);
+ 
         List<Blog> savedList = userBlogList.stream().filter(b -> "SAVED".equals(String.valueOf(b.getBlogState()))).collect(Collectors.toList());
         map.addAttribute("userBlogList", savedList);
         if (savedList.size() != 0) {
-        Collections.sort(savedList, new Comparator<Blog>() {
-    		public int compare(Blog b1, Blog b2) {
-    			return b1.getLastModifiedDate().compareTo(b2.getLastModifiedDate());
-    		}
-    	});    	
-    	map.addAttribute("rescentBlog", savedList.get(0));
+        	map.addAttribute("rescentBlog", savedList.get(0));
     	}else {
     		map.addAttribute("rescentBlog", "no blog");
     	}
@@ -74,7 +69,6 @@ public class RouteController {
         Subject subject = SecurityUtils.getSubject();
         User user = (User) subject.getPrincipals().getPrimaryPrincipal();
         List<Blog> userBlogList = blogService.getByUser(user);
-        userBlogList.forEach(b -> System.out.println(String.valueOf(b.getBlogState())));
         map.addAttribute("userPublishedBlogList", userBlogList.stream().filter(b -> "APPROVED".equals(String.valueOf(b.getBlogState()))).collect(Collectors.toList()));
     	return "admin/blog/publishedBlog";
     }
@@ -84,7 +78,6 @@ public class RouteController {
         Subject subject = SecurityUtils.getSubject();
         User user = (User) subject.getPrincipals().getPrimaryPrincipal();
         List<Blog> userBlogList = blogService.getByUser(user);
-        userBlogList.forEach(b -> System.out.println(String.valueOf(b.getBlogState())));
         map.addAttribute("userTrashBlogList", userBlogList.stream().filter(b -> "DELETED".equals(String.valueOf(b.getBlogState()))).collect(Collectors.toList()));
     	return "admin/blog/listTrashBlog";
     }

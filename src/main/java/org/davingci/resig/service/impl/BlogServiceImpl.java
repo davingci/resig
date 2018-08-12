@@ -6,9 +6,11 @@ import org.davingci.resig.domain.Blog;
 import org.davingci.resig.domain.User;
 import org.davingci.resig.service.BlogService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -46,5 +48,12 @@ public class BlogServiceImpl implements BlogService {
     public List<Blog> getByUser(User user){
     	return blogDao.findByUser(user);
     }
+    
+    @Override
+    public List<Blog> getByUserSortByLastModifiedDateDesc(User user) {
+    	return blogDao.findByUserOrderByLastModifiedDateDesc(user);
+    }
+    
+
 
 }

@@ -21,10 +21,12 @@ public class BlogServiceImpl implements BlogService {
     @Autowired
     BlogDao blogDao;
     
+    @Override
     public void save(Blog blog) {
     	blogDao.save(blog);
     }
 
+    @Override
     public Blog saveAndFlush(Blog blog) {
         return blogDao.saveAndFlush(blog);
     }

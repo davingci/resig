@@ -7,7 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserAgentDao extends JpaRepository<UserAgent, Integer> {
 	
-	UserAgent getById(Integer id);	
+	UserAgent getById(Integer id);
+	UserAgent findByUsername(String username);
 	
 	
 

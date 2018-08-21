@@ -28,7 +28,7 @@ public class LoginHistory implements Serializable{
 	
 	private String clientOs;
 	
-	private String ClientOsVersion;
+	private String clientOsVersion;
 	
 	private String clientBrowser;
 	

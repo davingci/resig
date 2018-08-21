@@ -19,7 +19,10 @@ public class UserAgentServiceImpl implements UserAgentService{
 	public UserAgent findById(Integer id) {
 		return userAgentDao.getById(id);
 	}
-
-
+	
+	@Override
+	public UserAgent getByUsername(String username) {
+		return userAgentDao.findByUsername(username);		
+	}
 
 }

@@ -1,5 +1,7 @@
 package org.davingci.resig.service.impl;
 
+import java.util.List;
+
 import org.davingci.resig.dao.LoginHistoryDao;
 import org.davingci.resig.domain.LoginHistory;
 import org.davingci.resig.service.LoginHistoryService;
@@ -17,6 +19,11 @@ public class LoginHistoryServiceImpl implements LoginHistoryService {
 	@Override
 	public void save(LoginHistory loginHistory) {
 		loginHistoryDao.save(loginHistory);
+	}
+	
+	@Override
+	public List<LoginHistory> findByUsername(String username) {
+		return loginHistoryDao.getByUsername(username);
 	}
 
 }

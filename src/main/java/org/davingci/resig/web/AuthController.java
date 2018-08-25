@@ -42,8 +42,8 @@ public class AuthController {
     @Autowired
     private LoginHistoryService loginHistoryService;
     
-   
     
+            
     @PostMapping("/auth/login")
     public Response login(@RequestParam String username,
                           @RequestParam String password,

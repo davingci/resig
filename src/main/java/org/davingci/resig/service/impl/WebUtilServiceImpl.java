@@ -7,10 +7,14 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.davingci.resig.service.WebUtilService;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 public class WebUtilServiceImpl implements WebUtilService{
 	
-	@Override
+
 	public Map<String, String> getRquestHeadersInMap(HttpServletRequest request) {
     	
     	Map<String, String> result = new HashMap<>();
@@ -24,7 +28,7 @@ public class WebUtilServiceImpl implements WebUtilService{
     	return result;
     }
 	
-	@Override
+
     public String getClientIp(HttpServletRequest request) {
 		String ip = "";
     	if (request != null) {		

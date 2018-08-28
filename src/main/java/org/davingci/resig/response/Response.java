@@ -1,6 +1,9 @@
 
 package org.davingci.resig.response;
 
+import lombok.Data;
+
+
 public class Response {
 
     private Integer code;

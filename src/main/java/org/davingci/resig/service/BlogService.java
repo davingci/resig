@@ -23,5 +23,6 @@ public interface BlogService {
     
     public List<Blog> getByUserSortByLastModifiedDateDesc(User user);
     
+    public void hitCounter(Integer id);
 
 }

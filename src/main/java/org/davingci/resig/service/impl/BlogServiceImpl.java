@@ -14,12 +14,17 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpSession;
+
 @Service
 @Transactional
 public class BlogServiceImpl implements BlogService {
 
     @Autowired
     BlogDao blogDao;
+    
+	@Autowired
+	private HttpSession httpSession;
     
     @Override
     public void save(Blog blog) {
@@ -56,6 +61,16 @@ public class BlogServiceImpl implements BlogService {
     	return blogDao.findByUserOrderByLastModifiedDateDesc(user);
     }
     
+    public void hitCounter(Integer id) {
+    	Blog blog = blogDao.getById(id);
+    	Integer counter = blog.getCounter();
+    	if (counter == null) {
+    		counter = 0;
+    	}
+        counter = counter +1;        	
+        blog.setCounter(counter);        	
+        blogDao.save(blog);
+    }
 
 
 }

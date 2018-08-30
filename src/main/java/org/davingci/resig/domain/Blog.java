@@ -25,6 +25,8 @@ public class Blog extends AbstractAuditable<String> implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     
+    private Integer counter;
+    
     @Enumerated(EnumType.STRING)
     @Column(length=10)
     private  BlogStateEnum blogState;

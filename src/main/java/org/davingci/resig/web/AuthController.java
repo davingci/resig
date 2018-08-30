@@ -63,7 +63,7 @@ public class AuthController {
         WebUtilService webUtil = new WebUtilServiceImpl();
 		String loginIp = webUtil.getClientIp(request);
 		
-		//set location current till ipstack
+		//set location current until ipstack is used
         String loginLocation = null;
         if(loginLocation == null) {
         	loginLocation = "current";
